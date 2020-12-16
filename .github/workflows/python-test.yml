@@ -37,7 +37,7 @@ jobs:
 
       - name: Test with pytest
         run: |
-          pytest --cov ./test*.py
+          pytest --cov task_Surname_Name_task ./test*.py
       - name: Test archive
         run: |
           chmod u+x ./create-archive-test.sh
