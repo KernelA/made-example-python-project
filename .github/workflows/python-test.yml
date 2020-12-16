@@ -1,0 +1,44 @@
+name: Python application
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-18.04
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python 3.7
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.7
+      - name: Cache pip dependecies
+        uses: actions/cache@v2
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+            ${{ runner.os }}-
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; 
+            then pip install -r requirements.txt;
+          fi
+      - name: Lint with pylint
+        run: |
+          pylint --exit-zero ./task_*.py
+
+      - name: Test with pytest
+        run: |
+          pytest --cov ./test*.py
+      - name: Test archive
+        run: |
+          chmod u+x ./create-archive-test.sh
+          ./create-archive-test.sh
